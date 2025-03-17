@@ -1,6 +1,9 @@
 <template>
   <div class="flex px-6 py-4 bg-stone-200">
-    <h1 class="text-2xl font-bold text-gray-700">3D Viewer</h1>
+    <h1 class="text-2xl font-bold text-amber-700 flex items-center">
+      <img src="/static/slogo.ico" alt="Logo" class="w-20 h-10 mr-2">
+      寻仙模型查看器
+    </h1>
   </div>
   
   <div class="canvas-container">
