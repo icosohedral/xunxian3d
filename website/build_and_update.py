@@ -86,6 +86,11 @@ def move():
         img_folder = os.path.join(static_folder, 'img')
         media_folder = os.path.join(static_folder, 'media')
         favicon_path = os.path.join(static_folder, 'favicon.ico')
+        inside_static_folder = os.path.join(static_folder, 'static')
+
+        if os.path.exists(inside_static_folder):
+            shutil.rmtree(inside_static_folder)
+            print_success("Deleted inside static folder.")
 
         if os.path.exists(css_folder):
             shutil.rmtree(css_folder)
