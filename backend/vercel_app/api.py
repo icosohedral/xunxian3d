@@ -5,11 +5,13 @@ import os, json
     
 def get_model_list(request):
     # static path
-    files = []
+    data = []
+    file_types = ['.obj', '.glb', '.gltf']
     model_path = os.path.join(settings.STATICFILES_DIRS[0], 'models')
     for file in os.listdir(model_path):
-        if ".obj" in file:
-            files.append(file)
-    return JsonResponse({'result': True, 'data': files, 'err': ''})
+        for file_type in file_types:
+            if file_type in file:
+                data.append(file)
+    return JsonResponse({'result': True, 'data': data, 'err': ''})
     
 

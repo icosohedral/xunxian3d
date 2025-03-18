@@ -13,6 +13,8 @@
         <OrbitControls />
         <TresAmbientLight :intensity="1" />
         <TresDirectionalLight :position="[5, 5, 5]" :intensity="0.8" />
+        <!-- 添加网格 -->
+        <!-- <TresGridHelper :args="[10, 20, '#888888', '#444444']" /> -->
         <primitive v-if="objModel" :object="objModel" />
       </TresCanvas>
     </div>
@@ -34,17 +36,6 @@
         </select>
       </div>
 
-      <!-- 文件上传按钮 -->
-      <div class="upload-area mt-4">
-        <label class="block mb-2 font-semibold text-gray-700">上传模型</label>
-        <input 
-          class="w-full p-2 border rounded-lg" 
-          type="file" 
-          accept=".obj" 
-          @change="handleUpload" 
-        />
-      </div>
-
       <!-- 操作说明 -->
       <div class="instructions mt-6">
         <h2 class="block font-semibold text-base text-gray-700 mb-4">操作说明</h2>
@@ -64,6 +55,7 @@ import { TresCanvas } from '@tresjs/core'
 import { OrbitControls } from '@tresjs/cientos'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { MeshStandardMaterial } from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import api from '../api' // 导入 API
 
 export default {
@@ -85,16 +77,25 @@ export default {
   watch: {
     modelUrl(newUrl) {
       if (!newUrl) return
-      const loader = new OBJLoader()
-      loader.load(newUrl, (obj) => {
-        const grayMaterial = new MeshStandardMaterial({ color: 0x808080 }) // 设定灰色材质
-        obj.traverse((child) => {
-          if (child.isMesh) {
-            child.material = grayMaterial
-          }
+      const fileExtension = newUrl.split('.').pop().toLowerCase()
+
+      if (fileExtension === 'obj') {
+        const loader = new OBJLoader()
+        loader.load(newUrl, (obj) => {
+          const grayMaterial = new MeshStandardMaterial({ color: 0x808080 })
+          obj.traverse((child) => {
+            if (child.isMesh) {
+              child.material = grayMaterial
+            }
+          })
+          this.objModel = markRaw(obj)
         })
-        this.objModel = markRaw(obj) // **关键：使用 markRaw() 避免 Vue 代理 obj**
-      })
+      } else if (fileExtension === 'glb' || fileExtension === 'gltf') {
+        const loader = new GLTFLoader()
+        loader.load(newUrl, (gltf) => {
+          this.objModel = markRaw(gltf.scene)
+        })
+      }
     }
   },
   methods: {
@@ -105,7 +106,7 @@ export default {
           // 解析模型列表
           this.presetModels = response.data.data.map((model) => {
             return {
-              name: model, // 可以根据需要设置名字
+              name: model.replace(/\.(glb|gltf|obj)$/i, ''), // 去除扩展名
               url: `/static/models/${model}` // 根据实际文件路径调整
             }
           })
@@ -114,12 +115,6 @@ export default {
         }
       } catch (error) {
         console.error('API 请求失败:', error)
-      }
-    },
-    handleUpload(event) {
-      const file = event.target.files[0]
-      if (file) {
-        this.modelUrl = URL.createObjectURL(file) // 赋值给 modelUrl
       }
     },
     handlePresetSelect(event) {
@@ -132,70 +127,6 @@ export default {
 
 
 
-<style>
-/* 页面整体布局 */
-.canvas-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-}
+<style src="../style/index.css">
 
-/* 3D 画布区域 */
-.canvas-wrapper {
-  width: 800px;
-  height: 600px;
-  position: relative;
-  overflow: hidden;
-  background-color: white;
-}
-
-.fixed-canvas {
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
-}
-
-/* 右侧操作区域 */
-.sidebar {
-  width: 250px;
-  padding: 20px;
-  margin-left: 20px;
-  background-color: #f9fafb;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  font-family: Arial, sans-serif;
-}
-
-/* 选择预置模型 */
-.preset-area {
-  margin-bottom: 20px;
-}
-
-/* 上传区域 */
-.upload-area input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  cursor: pointer;
-}
-
-/* 操作说明 */
-.instructions {
-  font-size: 14px;
-}
-
-.instructions ul {
-  line-height: 1.6;
-}
-
-.instructions li {
-  display: flex;
-  align-items: center;
-}
-
-.instructions li strong {
-  font-weight: bold;
-}
 </style>
