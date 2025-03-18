@@ -1,5 +1,5 @@
 import os
-import shutil
+import shutil, subprocess
 from colorama import init, Fore, Style
 
 # Initialize colorama
@@ -37,12 +37,11 @@ def build():
     print_info("Running build command...")
     # 设置为生产环境URL
     rewrite_api(env="prod")
-    try:
-        res = os.popen("npm run build").read()
-    except:
-        return False
-    print_info("Build command output:\n" + res)
-    if "Build complete" not in res:
+
+    res = subprocess.run("npm run build", shell=True, capture_output=True, text=True, encoding="utf-8", errors="ignore")
+
+    print_info("Build command output:\n" + res.stdout)  # 改成 res.stdout
+    if "Build complete" not in res.stdout:
         print_error("Build failed.")
         return False
     # 还原 api.js 文件为测试环境 URL
