@@ -5,36 +5,44 @@
       寻仙模型查看器
     </h1>
   </div>
-  
   <div class="canvas-container">
-    <div class="canvas-wrapper">
+    <div class="canvas-wrapper relative">
       <TresCanvas class="fixed-canvas" clear-color="#FFFFFF"> 
         <TresPerspectiveCamera :position="[0, 2, 5]" />
         <OrbitControls />
         <TresAmbientLight :intensity="1" />
         <TresDirectionalLight :position="[5, 5, 5]" :intensity="0.8" />
-        <!-- 添加网格 -->
-        <!-- <TresGridHelper :args="[10, 20, '#888888', '#444444']" /> -->
         <primitive v-if="objModel" :object="objModel" />
       </TresCanvas>
     </div>
 
     <!-- 右侧操作区域 -->
     <div class="sidebar text-left">
-      <!-- 选择预置模型 -->
-      <div class="preset-area">
-        <label for="preset-models" class="block mb-2 font-semibold text-gray-700">选择模型</label>
-        <select 
-          id="preset-models" 
-          class="w-full p-2 border rounded-lg" 
-          @change="handlePresetSelect"
-        >
-          <option value="">-- 选择模型 --</option>
-          <option v-for="model in presetModels" :key="model.url" :value="model.url">
-            {{ model.name }}
-          </option>
-        </select>
-      </div>
+    <!-- 选择预置模型 -->
+    <div class="preset-area flex items-center space-x-2">
+      <label for="preset-models" class="font-semibold text-gray-700">选择模型</label>
+
+      <select 
+        id="preset-models" 
+        class="p-2 border rounded-lg flex-grow"
+        @change="handlePresetSelect"
+      >
+        <option value="">-- 选择模型 --</option>
+        <option v-for="model in presetModels" :key="model.url" :value="model.url">
+          {{ model.name }}
+        </option>
+      </select>
+
+      <!-- 下载按钮 -->
+      <button 
+        v-if="modelUrl" 
+        @click="downloadModel" 
+        title="下载模型"
+        class="material-symbols--download px-4 py-2"
+      />
+
+    </div>
+
 
       <!-- 操作说明 -->
       <div class="instructions mt-6">
@@ -117,6 +125,16 @@ export default {
         console.error('API 请求失败:', error)
       }
     },
+    downloadModel() {
+      if (!this.modelUrl) return;
+      
+      const link = document.createElement('a');
+      link.href = this.modelUrl;
+      link.download = this.modelUrl.split('/').pop(); // 提取文件名
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    },
     handlePresetSelect(event) {
       this.modelUrl = event.target.value // 更新 modelUrl
     }
@@ -127,6 +145,4 @@ export default {
 
 
 
-<style src="../style/index.css">
-
-</style>
+<style src="../style/index.css"></style>
