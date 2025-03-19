@@ -1,11 +1,26 @@
-.material-symbols--download {
-    display: inline-block;
-    width: 24px;
-    height: 24px;
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%234382dd' d='m12 16l-5-5l1.4-1.45l2.6 2.6V4h2v8.15l2.6-2.6L17 11zm-6 4q-.825 0-1.412-.587T4 18v-3h2v3h12v-3h2v3q0 .825-.587 1.413T18 20z'/%3E%3C/svg%3E");
-  }
+.tabler--download {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 11l5 5l5-5m-5-7v12'/%3E%3C/svg%3E");
+  background-color: currentColor;
+  -webkit-mask-image: var(--svg);
+  mask-image: var(--svg);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* 隐藏整个页面的滚动条 */
+html, body {
+  overflow: hidden;
+}
+
+#preset-models {
+  max-height: 100px; /* 设置下拉框的最大高度，假设每个选项大约 30px，显示 10 个选项 */
+  overflow-y: auto;  /* 超过最大高度时启用垂直滚动条 */
+}
 
 /* 页面整体布局 */
 .canvas-container {

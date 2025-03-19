@@ -6,7 +6,7 @@
     </h1>
   </div>
   <div class="canvas-container">
-    <div class="canvas-wrapper relative">
+    <div class="canvas-wrapper relative border-4 border-stone-200">
       <TresCanvas class="fixed-canvas" clear-color="#FFFFFF"> 
         <TresPerspectiveCamera :position="[0, 2, 5]" />
         <OrbitControls />
@@ -19,12 +19,12 @@
     <!-- 右侧操作区域 -->
     <div class="sidebar text-left">
     <!-- 选择预置模型 -->
-    <div class="preset-area flex items-center space-x-2">
+    <div class="preset-area flex items-center space-x-2 align-middle">
       <label for="preset-models" class="font-semibold text-gray-700">选择模型</label>
 
       <select 
         id="preset-models" 
-        class="p-2 border rounded-lg flex-grow"
+        class="p-2 border rounded-lg flex-grow text-sm"
         @change="handlePresetSelect"
       >
         <option value="">-- 选择模型 --</option>
@@ -38,7 +38,7 @@
         v-if="modelUrl" 
         @click="downloadModel" 
         title="下载模型"
-        class="material-symbols--download px-4 py-2"
+        class="tabler--download px-4 py-2 hover:text-blue-700"
       />
 
     </div>
@@ -96,16 +96,31 @@ export default {
               child.material = grayMaterial
             }
           })
+
+          // 旋转模型
+          obj.rotation.y = Math.PI * 240 / 180;
+          // 设置模型大小
+          obj.scale.set(2.0, 2.0, 2.0); // 调整模型的大小为原来的2倍
+          // 将模型下移
+          obj.position.y = -1.2; // 将模型沿 Y 轴下移 1.2 单位
+
           this.objModel = markRaw(obj)
         })
       } else if (fileExtension === 'glb' || fileExtension === 'gltf') {
         const loader = new GLTFLoader()
         loader.load(newUrl, (gltf) => {
+          // 旋转模型
+          gltf.scene.rotation.y = Math.PI * 240 / 180;
+          // 设置模型大小
+          gltf.scene.scale.set(2.0, 2.0, 2.0); // 调整模型的大小为原来的2倍
+          // 将模型下移
+          gltf.scene.position.y = -1.2; // 将模型沿 Y 轴下移 1.2 单位
+
           this.objModel = markRaw(gltf.scene)
         })
       }
     }
-  },
+  }, 
   methods: {
     async fetchModels() {
       try {
